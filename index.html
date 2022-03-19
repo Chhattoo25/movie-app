@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movieapp</title>
+
+
+    <style>
+        body {
+            background-color: rgb(18, 97, 131);
+        }
+
+        #navbar {
+            display: flex;
+            width: 90%;
+            margin-top: 0;
+            margin: auto;
+            height: 100Px;
+            background-image: repeating-radial-gradient(rgb(231, 227, 227), green);
+            border-radius: 20px;
+
+        }
+
+        #header {
+            display: flex;
+            width: 380px;
+            height: 45px;
+            margin: auto;
+
+            gap: 10px;
+        }
+
+        #header>input {
+            width: 67%;
+            border-radius: 10px;
+            font-size: 22px;
+            background-color: rgb(86, 104, 107);
+            color: rgb(29, 2, 2);
+            font-size: bold;
+        }
+
+        #header>button {
+            width: 30%;
+            border-radius: 10px;
+            font-size: 15px;
+            background-color: rgb(148, 30, 172);
+            color: rgb(5, 5, 5);
+
+        }
+
+        #header>input::placeholder {
+            font-size: 22px;
+            color: rgb(15, 15, 15);
+
+        }
+
+        h1 {
+            color: rgb(65, 105, 13);
+        }
+
+        h3 {
+            color: rgb(231, 231, 214);
+        }
+
+        #container {
+
+            display: grid;
+            width: 80%;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: 500px;
+            margin: 10px auto;
+            box-sizing: border-box;
+            gap: 10px;
+            border-radius: 15px;
+            font-family: sans-serif;
+
+
+        }
+
+        img {
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+        }
+
+        #imgErr {
+            width: 600px;
+        }
+
+        #poster {
+            margin-right: 20px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="navbar">
+        <div id="header">
+            <input id="name" type="text" placeholder="Enter movie name">
+            <button onClick="moviesData()" type="submit">Search</button>
+            <!-- <select id="sort">
+                <option></option>
+                <option></option>
+            </select> -->
+
+        </div>
+    </div>
+
+
+    <div id="container">
+        <div id="poster"></div>
+
+        <div id="title"></div>
+
+    </div>
+</body>
+
+</html>
+
+<script>
+
+
+    let des = document.getElementById("title")
+    let poster = document.getElementById("poster")
+    let container = document.getElementById("container");
+
+    async function moviesData() {
+        try {
+            let search = document.querySelector("#name").value;
+            let res = await fetch(`https://www.omdbapi.com/?t=${search}&apikey=7b9e6a84`)
+
+            let data = await res.json()
+            console.log("data:", data)
+            if(data.Ratings[0].value<8.5){
+             rating.innerText="low rating"
+            }
+          
+            appendMovie(data)
+
+        }
+
+
+        catch (err) {
+
+            errfun()
+
+
+        }
+
+    }
+    function appendMovie(data) {
+        poster.innerHTML = null;
+        des.innerHTML = null;
+        container.innerHTML = null;
+
+        let image = document.createElement("img")
+        image.src = data.Poster;
+
+        let release = document.createElement("h3")
+        release.innerText = `Realease Date:- ${data.Released}`
+
+        let title = document.createElement("h1")
+        title.innerText = data.Title;
+
+        let rating = document.createElement("h3")
+        
+        rating.innerText = `IMDB Rating :-  ${data.Ratings[0].Value}`
+
+        let language = document.createElement("h3")
+        language.innerText = "Language :" + " " + data.Language;
+
+        let genre = document.createElement("h3")
+        genre.innerText = "Genre :" + " " + data.Genre;
+
+        let direct = document.createElement("h3")
+        direct.innerText = "Director :" + " " + data.Director;
+
+        let plot = document.createElement("h3")
+        plot.innerText = "Plot :" + " " + data.Plot;
+
+
+
+
+
+        des.append(title, release, rating, language, genre, direct, plot)
+
+        poster.append(image);
+
+        container.append(poster, des);
+
+
+        container.style.backgroundColor = "black";
+        container.style.boxShadow = "12px 3px 5px grey"
+
+
+
+
+
+    }
+
+
+    function errfun() {
+
+        container.innerHTML = null;
+        let errImage = document.createElement("img")
+        errImage.setAttribute("id", "imgErr")
+        errImage.src = "data:image/jpeg;base64,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";
+        container.append(errImage)
+    }     </script>
